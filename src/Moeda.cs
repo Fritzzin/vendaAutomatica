@@ -1,7 +1,14 @@
-public class Moeda(double preco, string nome)
+namespace venda_automatica.src
 {
-    private readonly double valor = preco;
-    private readonly string nome = nome;
-    public string Nome => nome;
-    public double Valor => valor;
+    public class Moeda(double preco, string nome)
+    {
+        public string Nome
+        {
+            get => nome;
+        }
+        public double Valor
+        {
+            get => preco;
+        }
+    }
 }

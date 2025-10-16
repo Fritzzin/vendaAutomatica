@@ -1,10 +1,18 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Security.Cryptography.X509Certificates;
+using venda_automatica.src;
+
 Console.WriteLine("Bem Vindo!");
 Console.WriteLine("----------");
 
-Produto[] produtos = [new(10, 1.50, "Coca-cola"), new(10, 0.30, "Pastelina"), new(10, 1, "Agua")];
+List<Produto> produtos =
+[
+    new(10, 1.50, "Coca-cola"),
+    new(10, 0.30, "Pastelina"),
+    new(10, 1, "Agua"),
+];
 
-Moeda[] moedas =
+List<Moeda> moedas =
 [
     new(0.01, "0.01"),
     new(0.05, "0.05"),
@@ -45,17 +53,44 @@ while (inputUsuario != "q")
     {
         Console.WriteLine("INPUT USUARIO: " + inputUsuario);
         string[] opcoesDoUsuario = inputUsuario.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+
         foreach (string opcao in opcoesDoUsuario)
         {
-            Console.WriteLine(opcao);
+            bool encontrouOpcao = false;
+
+            foreach (Produto produto in produtos)
+            {
+                if (produto.Nome == opcao)
+                {
+                    Console.WriteLine("Encontrei produto!");
+                    encontrouOpcao = true;
+                }
+            }
+
+            foreach (Moeda moeda in moedas)
+            {
+                if (moeda.Nome == opcao)
+                {
+                    Console.WriteLine("Encontrei moeda!");
+                    encontrouOpcao = true;
+                }
+            }
+
+            if (!encontrouOpcao)
+            {
+                Console.WriteLine("Digite moedas ou produtos validos");
+            }
         }
     }
 }
 
-// Verificar se inputs existem no sistema (moeda e nome do produto)
-// Adicionar moedas utilizadas
 // Verificar se ha produtos suficiente
 // Verificar se ha dinheiro o suficiente
+// Somar saldo
+// Reduzir saldo
+// aumentar quantidade de moeda por moeda colocada
+// remover quantidade de moedas
+// remover quantidade de produto
 // Caso valor for maior, verificar se ha moedas para troco
 // Caso nao houver moedas o suficiente, dar erro NO_COINS
 // Caso nao houver troco a ser entregue, enviar NO_CHANGE
