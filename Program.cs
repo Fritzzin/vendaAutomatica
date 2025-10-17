@@ -39,6 +39,9 @@ string? inputUsuario = "";
 decimal saldo = 0m;
 
 List<Produto> listaDeCompras = [];
+List<Moeda> moedasParaTroco = [];
+
+organizarMoedas();
 
 // Loop para execucao do programa
 while (inputUsuario != "q")
@@ -47,22 +50,21 @@ while (inputUsuario != "q")
 
     if (saldo > 0m)
     {
-        Console.Write("Insira moedas e escolha um produto (Saldo Atual:" + saldo + "):");
+        Console.Write("Insira moedas e escolha um produto (Saldo Atual: R$" + saldo + "):");
     }
     else
     {
         Console.Write("Insira moedas e escolha um produto: ");
     }
 
+    // verificar inputs do usuario
     inputUsuario = Console.ReadLine();
     if (inputUsuario == null || inputUsuario.Trim() == "")
     {
         Console.WriteLine("Valor vazio. Favor inserir algum valor.");
         continue;
     }
-
-    // verificar inputs do usuario
-    Console.WriteLine("INPUT USUARIO: " + inputUsuario);
+    // Console.WriteLine("INPUT USUARIO: " + inputUsuario);
     realizarLogica(inputUsuario);
 }
 
@@ -98,10 +100,11 @@ void realizarLogica(string inputUsuario)
 
 bool VerificarMoeda(string opcao)
 {
+    bool encontrouMoedaValida = false;
+    decimal valorDaOpcao = 0m;
+
     try
     {
-        bool encontrouMoedaValida = false;
-        decimal valorDaOpcao = 0m;
         // Aceitar , ou . para decimais
         if (opcao.Contains(','))
         {
@@ -111,6 +114,7 @@ bool VerificarMoeda(string opcao)
         {
             valorDaOpcao = decimal.Parse(opcao);
         }
+
         foreach (Moeda moeda in moedas)
         {
             if (valorDaOpcao == moeda.Valor)
@@ -122,6 +126,7 @@ bool VerificarMoeda(string opcao)
                 return true;
             }
         }
+
         if (!encontrouMoedaValida)
         {
             Console.WriteLine(valorDaOpcao + " Nao e uma moeda valida");
@@ -184,8 +189,12 @@ void CalcularTroco()
 {
     if (saldo > 0m)
     {
-        Console.WriteLine("CALCULANDO TROCO");
+        Console.WriteLine("CALCULANDO TROCO...");
         Console.WriteLine("TROCO: " + saldo);
+        foreach (Moeda moeda in moedas)
+        {
+            Console.WriteLine(moeda.Nome);
+        }
         // Verificar se ha a possibilidade de troco com as moedas atuais
         // Criar lista com moedas de troco
     }
@@ -193,6 +202,16 @@ void CalcularTroco()
     {
         Console.WriteLine("Nao ha troco a ser entregue");
         Console.WriteLine("NO_CHANGE");
+    }
+}
+
+void organizarMoedas()
+{
+    moedas.Sort((x, y) => y.Valor.CompareTo(x.Valor));
+    // moedas.OrderBy(moeda => moeda.Valor);
+    foreach (Moeda moeda in moedas)
+    {
+        Console.WriteLine("Valor Moeda: " + moeda.Valor);
     }
 }
 
