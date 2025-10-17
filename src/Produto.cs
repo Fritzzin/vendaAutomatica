@@ -15,5 +15,10 @@ namespace venda_automatica.src
         {
             get => nome;
         }
+
+        public void RemoverProduto()
+        {
+            Quantidade--;
+        }
     }
 }

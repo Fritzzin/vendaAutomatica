@@ -38,9 +38,11 @@ foreach (Moeda moeda in moedas)
 
 string? inputUsuario = "";
 double saldoAtual = 0;
+
+// Loop para execucao do programa
 while (inputUsuario != "q")
 {
-    Console.WriteLine("\n\n\n");
+    Console.WriteLine("\n\n");
 
     if (saldoAtual > 0)
     {
@@ -57,67 +59,68 @@ while (inputUsuario != "q")
         Console.WriteLine("Valor vazio. Favor inserir algum valor.");
         continue;
     }
-    else
+
+    Console.WriteLine("INPUT USUARIO: " + inputUsuario);
+    string[] opcoesDoUsuario = inputUsuario.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+
+    foreach (string opcao in opcoesDoUsuario)
     {
-        Console.WriteLine("INPUT USUARIO: " + inputUsuario);
-        string[] opcoesDoUsuario = inputUsuario.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+        bool encontrouOpcaoValida = false;
 
-        foreach (string opcao in opcoesDoUsuario)
+        // Verificar a opcao se referencia a um produto
+        foreach (Produto produto in produtos)
         {
-            bool encontrouOpcaoValida = false;
-
-            // bool encontrouProdutoValido = false;
-            foreach (Produto produto in produtos)
+            if (produto.Nome.Equals(opcao, StringComparison.CurrentCultureIgnoreCase))
             {
-                if (produto.Nome.Equals(opcao, StringComparison.CurrentCultureIgnoreCase))
-                {
-                    Console.WriteLine("Encontrei produto!");
-                    encontrouOpcaoValida = true;
-                    // Verificar quantidade
-                    // Dizer se o produto e valido para compra
-                    // encontrouProdutoValido = true;
-                }
+                Console.WriteLine("Encontrei produto!");
+                encontrouOpcaoValida = true;
             }
+        }
 
-            // if (!encontrouProdutoValido)
-            // {
-            //     Console.WriteLine(opcao + " Nao e um produto valido");
-            // }
-
+        // try/catch para caso nao seja possivel realizar parse
+        try
+        {
             bool encontrouMoedaValida = false;
-
-            try
+            double valorDaOpcao = 0;
+            if (opcao.Contains(','))
             {
-                double valorDaOpcao = Double.Parse(opcao);
-                foreach (Moeda moeda in moedas)
+                valorDaOpcao = Double.Parse(opcao.Replace(",", "."));
+            }
+            else
+            {
+                valorDaOpcao = Double.Parse(opcao);
+            }
+            foreach (Moeda moeda in moedas)
+            {
+                if (valorDaOpcao == moeda.Valor)
                 {
-                    if (valorDaOpcao == moeda.Valor)
-                    {
-                        encontrouOpcaoValida = true;
-                        encontrouMoedaValida = true;
-                        moeda.InserirMoeda();
-                        saldoAtual += valorDaOpcao;
-                        Console.WriteLine(moeda.Nome + ": " + moeda.Quantidade + " quantidade");
-                    }
-                }
-                if (!encontrouMoedaValida)
-                {
-                    Console.WriteLine(valorDaOpcao + " Nao e uma moeda valida");
+                    encontrouOpcaoValida = true;
+                    encontrouMoedaValida = true;
+                    moeda.InserirMoeda();
+                    saldoAtual = Math.Round((saldoAtual + valorDaOpcao), 2);
+                    Console.WriteLine(moeda.Nome + ": " + moeda.Quantidade + " quantidade");
                 }
             }
-            catch (System.Exception)
+            if (!encontrouMoedaValida)
             {
-                // Console.WriteLine("Nao é uma moeda");
+                Console.WriteLine(valorDaOpcao + " Nao e uma moeda valida");
             }
+        }
+        catch (System.Exception)
+        {
+            // Console.WriteLine("Nao é uma moeda");
+        }
 
-            if (!encontrouOpcaoValida)
-            {
-                Console.WriteLine("Digite moedas e/ou produtos validos");
-            }
+        // Mensagens de erro
+        if (!encontrouOpcaoValida)
+        {
+            Console.WriteLine("Digite moedas e/ou produtos validos");
         }
     }
 }
 
+// Verificar quantidade
+// Dizer se o produto e valido para compra
 // Verificar se ha dinheiro o suficiente
 // Reduzir saldo
 // remover quantidade de moedas
