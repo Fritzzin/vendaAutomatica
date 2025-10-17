@@ -1,5 +1,4 @@
-﻿using System.Runtime.Intrinsics.X86;
-using venda_automatica.src;
+﻿using venda_automatica.src;
 
 Console.WriteLine("Bem Vindo!");
 Console.WriteLine("----------");
@@ -67,34 +66,29 @@ while (inputUsuario != "q")
     foreach (string opcao in opcoesDoUsuario)
     {
         // bool encontrouOpcaoValida = false;
+        bool encontrouMoeda = false;
+        bool encontrouProduto = false;
 
-        bool encontrouMoeda = VerificarProduto(opcao);
-        bool encontrouProduto = VerificarMoeda(opcao);
+        encontrouMoeda = VerificarMoeda(opcao);
+        encontrouProduto = VerificarProduto(opcao);
 
+        // Realizar Compra
+        RealizarCompra(encontrouProduto);
         if (opcao.Equals("CHANGE", StringComparison.CurrentCultureIgnoreCase))
         {
-            Console.WriteLine("CALCULANDO TROCO...");
-            decimal troco = 0m;
-            troco = saldo - precoTotal;
-            if (troco > 0)
-            {
-                Console.WriteLine("ENTREGAR TROCO");
-            }
-            else
-            {
-                Console.WriteLine("Nao ha troco a ser entregue");
-            }
-            // Calcular troco
-            // Verificar se ha a possibilidade de troco com as moedas atuais
-            // Criar lista com moedas de troco
+            CalcularTroco();
         }
+        else
+        {
+            Console.WriteLine("SALDO: " + saldo);
+            Console.WriteLine("PRECO: " + precoTotal);
+        }
+
         // Mensagens de erro
         // if (!encontrouMoeda && !encontrouProduto)
         // {
         //     Console.WriteLine("Digite moedas e/ou produtos validos");
         // }
-        Console.WriteLine("SALDO: " + saldo);
-        Console.WriteLine("PRECO: " + precoTotal);
     }
 }
 
@@ -163,13 +157,32 @@ bool VerificarProduto(string opcao)
     return false;
 }
 
+void RealizarCompra(bool produtoSelecionado)
+{
+    if (produtoSelecionado && ((saldo - precoTotal) >= 0))
+    {
+        saldo -= precoTotal;
+        Console.WriteLine("Compra realizada");
+    }
+}
 
-// Verificar quantidade
-// Dizer se o produto e valido para compra
+void CalcularTroco()
+{
+    if (saldo > 0)
+    {
+        Console.WriteLine("ENTREGAR TROCO");
+        Console.WriteLine("TROCO: " + saldo);
+        // Verificar se ha a possibilidade de troco com as moedas atuais
+        // Criar lista com moedas de troco
+    }
+    else
+    {
+        Console.WriteLine("Nao ha troco a ser entregue");
+        Console.WriteLine("NO_CHANGE");
+    }
+}
+
 // Verificar se ha dinheiro o suficiente
-// Reduzir saldo
 // remover quantidade de moedas
-// remover quantidade de produto
 // Caso valor for maior, verificar se ha moedas para troco
 // Caso nao houver moedas o suficiente, dar erro NO_COINS
-// Caso nao houver troco a ser entregue, enviar NO_CHANGE
