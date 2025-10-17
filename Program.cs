@@ -12,12 +12,12 @@ List<Produto> produtos =
 
 List<Moeda> moedas =
 [
-    new("0.01", 0.01m, 10),
-    new("0.05", 0.05m, 10),
-    new("0.10", 0.10m, 10),
-    new("0.25", 0.25m, 10),
-    new("0.50", 0.50m, 10),
-    new("1.0", 1.0m, 10),
+    new("0.01", 0.01m, 0),
+    new("0.05", 0.05m, 0),
+    new("0.10", 0.10m, 0),
+    new("0.25", 0.25m, 0),
+    new("0.50", 0.50m, 0),
+    new("1.0", 1.0m, 0),
 ];
 
 Console.WriteLine("Produtos Disponiveis:");
@@ -36,7 +36,7 @@ foreach (Moeda moeda in moedas)
 }
 
 string? inputUsuario = "";
-decimal saldo = 0m;
+decimal saldo = 1m;
 
 List<Produto> listaDeCompras = [];
 List<Moeda> moedasParaTroco = [];
@@ -187,13 +187,46 @@ void RealizarCompra()
 
 void CalcularTroco()
 {
+    decimal troco = 0m;
+    moedasParaTroco = [];
+
     if (saldo > 0m)
     {
         Console.WriteLine("CALCULANDO TROCO...");
         Console.WriteLine("TROCO: " + saldo);
         foreach (Moeda moeda in moedas)
         {
-            Console.WriteLine(moeda.Nome);
+            if (saldo - troco == 0)
+            {
+                break;
+            }
+
+            if (moeda.Quantidade > 0 && (saldo - troco > 0))
+            {
+                for (int i = 0; i < moeda.Quantidade; i++)
+                {
+                    if (troco < saldo && (saldo - troco >= moeda.Valor))
+                    {
+                        troco += moeda.Valor;
+                        moeda.RemoverMoeda();
+                        moedasParaTroco.Add(moeda);
+                    }
+                }
+            }
+        }
+
+        if (troco == saldo)
+        {
+            Console.WriteLine("Moedas para troco: ");
+            foreach (Moeda moeda in moedasParaTroco)
+            {
+                Console.Write(moeda.Nome + ' ');
+            }
+            saldo = 0m;
+        }
+        else
+        {
+            Console.WriteLine("NO_COINS");
         }
         // Verificar se ha a possibilidade de troco com as moedas atuais
         // Criar lista com moedas de troco
@@ -208,7 +241,6 @@ void CalcularTroco()
 void organizarMoedas()
 {
     moedas.Sort((x, y) => y.Valor.CompareTo(x.Valor));
-    // moedas.OrderBy(moeda => moeda.Valor);
     foreach (Moeda moeda in moedas)
     {
         Console.WriteLine("Valor Moeda: " + moeda.Valor);
