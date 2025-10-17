@@ -1,12 +1,12 @@
 namespace venda_automatica.src
 {
-    public class Moeda(string nome, double preco, int quantidade)
+    public class Moeda(string nome, decimal preco, int quantidade)
     {
         public string Nome
         {
             get => nome;
         }
-        public double Valor
+        public decimal Valor
         {
             get => preco;
         }

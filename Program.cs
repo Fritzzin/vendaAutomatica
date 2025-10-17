@@ -1,4 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using System.Runtime.Intrinsics.X86;
 using venda_automatica.src;
 
 Console.WriteLine("Bem Vindo!");
@@ -13,12 +13,12 @@ List<Produto> produtos =
 
 List<Moeda> moedas =
 [
-    new("0.01", 0.01, 10),
-    new("0.05", 0.05, 10),
-    new("0.10", 0.10, 10),
-    new("0.25", 0.25, 10),
-    new("0.50", 0.50, 10),
-    new("1.0", 1.0, 10),
+    new("0.01", 0.01m, 10),
+    new("0.05", 0.05m, 10),
+    new("0.10", 0.10m, 10),
+    new("0.25", 0.25m, 10),
+    new("0.50", 0.50m, 10),
+    new("1.0", 1.0m, 10),
 ];
 
 Console.WriteLine("Produtos Disponiveis:");
@@ -37,7 +37,7 @@ foreach (Moeda moeda in moedas)
 }
 
 string? inputUsuario = "";
-double saldoAtual = 0;
+decimal saldoAtual = 0m;
 
 // Loop para execucao do programa
 while (inputUsuario != "q")
@@ -81,14 +81,14 @@ while (inputUsuario != "q")
         try
         {
             bool encontrouMoedaValida = false;
-            double valorDaOpcao = 0;
+            decimal valorDaOpcao = 0m;
             if (opcao.Contains(','))
             {
-                valorDaOpcao = Double.Parse(opcao.Replace(",", "."));
+                valorDaOpcao = Decimal.Parse(opcao.Replace(",", "."));
             }
             else
             {
-                valorDaOpcao = Double.Parse(opcao);
+                valorDaOpcao = Decimal.Parse(opcao);
             }
             foreach (Moeda moeda in moedas)
             {
@@ -97,7 +97,8 @@ while (inputUsuario != "q")
                     encontrouOpcaoValida = true;
                     encontrouMoedaValida = true;
                     moeda.InserirMoeda();
-                    saldoAtual = Math.Round((saldoAtual + valorDaOpcao), 2);
+                    // saldoAtual = Math.Round((saldoAtual + valorDaOpcao), 2);
+                    saldoAtual += valorDaOpcao;
                     Console.WriteLine(moeda.Nome + ": " + moeda.Quantidade + " quantidade");
                 }
             }
