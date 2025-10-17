@@ -6,9 +6,9 @@ Console.WriteLine("----------");
 
 List<Produto> produtos =
 [
-    new(10, 1.50, "Coca-cola"),
-    new(10, 0.30, "Pastelina"),
-    new(10, 1, "Agua"),
+    new("Coca-cola", 1.50m, 0),
+    new("Pastelina", 0.30m, 10),
+    new("Agua", 1m, 10),
 ];
 
 List<Moeda> moedas =
@@ -37,16 +37,17 @@ foreach (Moeda moeda in moedas)
 }
 
 string? inputUsuario = "";
-decimal saldoAtual = 0m;
+decimal saldo = 0m;
+decimal precoTotal = 0m;
 
 // Loop para execucao do programa
 while (inputUsuario != "q")
 {
     Console.WriteLine("\n\n");
 
-    if (saldoAtual > 0)
+    if (saldo > 0m)
     {
-        Console.Write("Insira moedas e escolha um produto (Saldo Atual:" + saldoAtual + "):");
+        Console.Write("Insira moedas e escolha um produto (Saldo Atual:" + saldo + "):");
     }
     else
     {
@@ -60,65 +61,108 @@ while (inputUsuario != "q")
         continue;
     }
 
+    // verificar inputs do usuario
     Console.WriteLine("INPUT USUARIO: " + inputUsuario);
     string[] opcoesDoUsuario = inputUsuario.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-
     foreach (string opcao in opcoesDoUsuario)
     {
-        bool encontrouOpcaoValida = false;
+        // bool encontrouOpcaoValida = false;
 
-        // Verificar a opcao se referencia a um produto
-        foreach (Produto produto in produtos)
-        {
-            if (produto.Nome.Equals(opcao, StringComparison.CurrentCultureIgnoreCase))
-            {
-                Console.WriteLine("Encontrei produto!");
-                encontrouOpcaoValida = true;
-            }
-        }
+        bool encontrouMoeda = VerificarProduto(opcao);
+        bool encontrouProduto = VerificarMoeda(opcao);
 
-        // try/catch para caso nao seja possivel realizar parse
-        try
+        if (opcao.Equals("CHANGE", StringComparison.CurrentCultureIgnoreCase))
         {
-            bool encontrouMoedaValida = false;
-            decimal valorDaOpcao = 0m;
-            if (opcao.Contains(','))
+            Console.WriteLine("CALCULANDO TROCO...");
+            decimal troco = 0m;
+            troco = saldo - precoTotal;
+            if (troco > 0)
             {
-                valorDaOpcao = Decimal.Parse(opcao.Replace(",", "."));
+                Console.WriteLine("ENTREGAR TROCO");
             }
             else
             {
-                valorDaOpcao = Decimal.Parse(opcao);
+                Console.WriteLine("Nao ha troco a ser entregue");
             }
-            foreach (Moeda moeda in moedas)
-            {
-                if (valorDaOpcao == moeda.Valor)
-                {
-                    encontrouOpcaoValida = true;
-                    encontrouMoedaValida = true;
-                    moeda.InserirMoeda();
-                    // saldoAtual = Math.Round((saldoAtual + valorDaOpcao), 2);
-                    saldoAtual += valorDaOpcao;
-                    Console.WriteLine(moeda.Nome + ": " + moeda.Quantidade + " quantidade");
-                }
-            }
-            if (!encontrouMoedaValida)
-            {
-                Console.WriteLine(valorDaOpcao + " Nao e uma moeda valida");
-            }
+            // Calcular troco
+            // Verificar se ha a possibilidade de troco com as moedas atuais
+            // Criar lista com moedas de troco
         }
-        catch (System.Exception)
-        {
-            // Console.WriteLine("Nao é uma moeda");
-        }
-
         // Mensagens de erro
-        if (!encontrouOpcaoValida)
-        {
-            Console.WriteLine("Digite moedas e/ou produtos validos");
-        }
+        // if (!encontrouMoeda && !encontrouProduto)
+        // {
+        //     Console.WriteLine("Digite moedas e/ou produtos validos");
+        // }
+        Console.WriteLine("SALDO: " + saldo);
+        Console.WriteLine("PRECO: " + precoTotal);
     }
 }
+
+bool VerificarMoeda(string opcao)
+{
+    // try/catch para caso nao seja possivel realizar parse
+    try
+    {
+        bool encontrouMoedaValida = false;
+        decimal valorDaOpcao = 0m;
+        if (opcao.Contains(','))
+        {
+            valorDaOpcao = decimal.Parse(opcao.Replace(",", "."));
+        }
+        else
+        {
+            valorDaOpcao = decimal.Parse(opcao);
+        }
+        foreach (Moeda moeda in moedas)
+        {
+            if (valorDaOpcao == moeda.Valor)
+            {
+                encontrouMoedaValida = true;
+                moeda.InserirMoeda();
+                saldo += valorDaOpcao;
+                Console.WriteLine(moeda.Nome + ": " + moeda.Quantidade + " quantidade");
+                return true;
+            }
+        }
+        if (!encontrouMoedaValida)
+        {
+            Console.WriteLine(valorDaOpcao + " Nao e uma moeda valida");
+            return false;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    catch (Exception)
+    {
+        return false;
+    }
+}
+
+bool VerificarProduto(string opcao)
+{
+    foreach (Produto produto in produtos)
+    {
+        if (produto.Nome.Equals(opcao, StringComparison.CurrentCultureIgnoreCase))
+        {
+            if (produto.Quantidade > 0)
+            {
+                Console.WriteLine("Produto disponivel");
+                produto.RemoverProduto();
+                precoTotal += produto.Preco;
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Produto em falta");
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
 
 // Verificar quantidade
 // Dizer se o produto e valido para compra

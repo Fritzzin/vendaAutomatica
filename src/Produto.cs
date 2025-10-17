@@ -1,13 +1,13 @@
 namespace venda_automatica.src
 {
-    public class Produto(int quantidade, double preco, string nome)
+    public class Produto(string nome, decimal preco, int quantidade)
     {
         public int Quantidade
         {
             get => quantidade;
             set => quantidade = value;
         }
-        public double Preco
+        public decimal Preco
         {
             get => preco;
         }
