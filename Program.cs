@@ -1,5 +1,4 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using System.Security.Cryptography.X509Certificates;
 using venda_automatica.src;
 
 Console.WriteLine("Bem Vindo!");
@@ -14,12 +13,12 @@ List<Produto> produtos =
 
 List<Moeda> moedas =
 [
-    new(0.01, "0.01"),
-    new(0.05, "0.05"),
-    new(0.10, "0.10"),
-    new(0.25, "0.25"),
-    new(0.50, "0.50"),
-    new(1.0, "1.0"),
+    new("0.01", 0.01, 10),
+    new("0.05", 0.05, 10),
+    new("0.10", 0.10, 10),
+    new("0.25", 0.25, 10),
+    new("0.50", 0.50, 10),
+    new("1.0", 1.0, 10),
 ];
 
 Console.WriteLine("Produtos Disponiveis:");
@@ -38,10 +37,19 @@ foreach (Moeda moeda in moedas)
 }
 
 string? inputUsuario = "";
+double saldoAtual = 0;
 while (inputUsuario != "q")
 {
     Console.WriteLine("\n\n\n");
-    Console.Write("Insira moedas e escolha produto: ");
+
+    if (saldoAtual > 0)
+    {
+        Console.Write("Insira moedas e escolha um produto (Saldo Atual:" + saldoAtual + "):");
+    }
+    else
+    {
+        Console.Write("Insira moedas e escolha um produto: ");
+    }
 
     inputUsuario = Console.ReadLine();
     if (inputUsuario == null || inputUsuario.Trim() == "")
@@ -56,39 +64,62 @@ while (inputUsuario != "q")
 
         foreach (string opcao in opcoesDoUsuario)
         {
-            bool encontrouOpcao = false;
+            bool encontrouOpcaoValida = false;
 
+            // bool encontrouProdutoValido = false;
             foreach (Produto produto in produtos)
             {
-                if (produto.Nome == opcao)
+                if (produto.Nome.Equals(opcao, StringComparison.CurrentCultureIgnoreCase))
                 {
                     Console.WriteLine("Encontrei produto!");
-                    encontrouOpcao = true;
+                    encontrouOpcaoValida = true;
+                    // Verificar quantidade
+                    // Dizer se o produto e valido para compra
+                    // encontrouProdutoValido = true;
                 }
             }
 
-            foreach (Moeda moeda in moedas)
+            // if (!encontrouProdutoValido)
+            // {
+            //     Console.WriteLine(opcao + " Nao e um produto valido");
+            // }
+
+            bool encontrouMoedaValida = false;
+
+            try
             {
-                if (moeda.Nome == opcao)
+                double valorDaOpcao = Double.Parse(opcao);
+                foreach (Moeda moeda in moedas)
                 {
-                    Console.WriteLine("Encontrei moeda!");
-                    encontrouOpcao = true;
+                    if (valorDaOpcao == moeda.Valor)
+                    {
+                        encontrouOpcaoValida = true;
+                        encontrouMoedaValida = true;
+                        moeda.InserirMoeda();
+                        saldoAtual += valorDaOpcao;
+                        Console.WriteLine(moeda.Nome + ": " + moeda.Quantidade + " quantidade");
+                    }
+                }
+                if (!encontrouMoedaValida)
+                {
+                    Console.WriteLine(valorDaOpcao + " Nao e uma moeda valida");
                 }
             }
-
-            if (!encontrouOpcao)
+            catch (System.Exception)
             {
-                Console.WriteLine("Digite moedas ou produtos validos");
+                // Console.WriteLine("Nao é uma moeda");
+            }
+
+            if (!encontrouOpcaoValida)
+            {
+                Console.WriteLine("Digite moedas e/ou produtos validos");
             }
         }
     }
 }
 
-// Verificar se ha produtos suficiente
 // Verificar se ha dinheiro o suficiente
-// Somar saldo
 // Reduzir saldo
-// aumentar quantidade de moeda por moeda colocada
 // remover quantidade de moedas
 // remover quantidade de produto
 // Caso valor for maior, verificar se ha moedas para troco
