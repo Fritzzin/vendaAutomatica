@@ -3,21 +3,23 @@
 Console.WriteLine("Bem Vindo!");
 Console.WriteLine("----------");
 
+int quantidadeProdutosInicial = 10;
 List<Produto> produtos =
 [
-    new("Coca-cola", 1.50m, 10),
-    new("Pastelina", 0.30m, 10),
-    new("Agua", 1m, 10),
+    new("Coca-cola", 1.50m, quantidadeProdutosInicial),
+    new("Pastelina", 0.30m, quantidadeProdutosInicial),
+    new("Agua", 1m, quantidadeProdutosInicial),
 ];
 
+int quantidadeMoedasInicial = 10;
 List<Moeda> moedas =
 [
-    new("0.01", 0.01m, 0),
-    new("0.05", 0.05m, 0),
-    new("0.10", 0.10m, 0),
-    new("0.25", 0.25m, 0),
-    new("0.50", 0.50m, 0),
-    new("1.0", 1.0m, 0),
+    new("0.01", 0.01m, quantidadeMoedasInicial),
+    new("0.05", 0.05m, quantidadeMoedasInicial),
+    new("0.10", 0.10m, quantidadeMoedasInicial),
+    new("0.25", 0.25m, quantidadeMoedasInicial),
+    new("0.50", 0.50m, quantidadeMoedasInicial),
+    new("1.00", 1.0m, quantidadeMoedasInicial),
 ];
 
 Console.WriteLine("Produtos Disponiveis:");
@@ -26,8 +28,7 @@ foreach (Produto produto in produtos)
     Console.Write(string.Concat(produto.Nome, " | "));
 }
 
-Console.WriteLine();
-Console.WriteLine("----------");
+Console.WriteLine("\n----------");
 
 Console.WriteLine("Moedas Disponiveis:");
 foreach (Moeda moeda in moedas)
@@ -36,7 +37,7 @@ foreach (Moeda moeda in moedas)
 }
 
 string? inputUsuario = "";
-decimal saldo = 1m;
+decimal saldo = 0m;
 
 List<Produto> listaDeCompras = [];
 List<Moeda> moedasParaTroco = [];
@@ -61,17 +62,16 @@ while (inputUsuario != "q")
     inputUsuario = Console.ReadLine();
     if (inputUsuario == null || inputUsuario.Trim() == "")
     {
-        Console.WriteLine("Valor vazio. Favor inserir algum valor.");
+        Console.WriteLine("Saldo vazio. Favor inserir algum valor.");
         continue;
     }
-    // Console.WriteLine("INPUT USUARIO: " + inputUsuario);
     realizarLogica(inputUsuario);
 }
 
 void realizarLogica(string inputUsuario)
 {
-    string[] opcoesDoUsuario = inputUsuario.Split(" ", StringSplitOptions.RemoveEmptyEntries);
     bool precisaTroco = false;
+    string[] opcoesDoUsuario = inputUsuario.Split(" ", StringSplitOptions.RemoveEmptyEntries);
     foreach (string opcao in opcoesDoUsuario)
     {
         // se a opcao se referir a uma moeda, adicionara ao saldo total
@@ -87,18 +87,20 @@ void realizarLogica(string inputUsuario)
         }
     }
 
+    // Se houver algo na lista de compras, realizar as compras
     if (listaDeCompras.Count > 0)
     {
         RealizarCompra();
     }
 
+    // se usuario requisitou troco, realizar o calculo de troco
     if (precisaTroco)
     {
         CalcularTroco();
     }
 }
 
-bool VerificarMoeda(string opcao)
+void VerificarMoeda(string opcao)
 {
     bool encontrouMoedaValida = false;
     decimal valorDaOpcao = 0m;
@@ -122,28 +124,22 @@ bool VerificarMoeda(string opcao)
                 encontrouMoedaValida = true;
                 moeda.InserirMoeda();
                 saldo += valorDaOpcao;
-                Console.WriteLine(moeda.Nome + ": " + moeda.Quantidade + " quantidade(s)");
-                return true;
+                // Console.WriteLine(moeda.Nome + ": " + moeda.Quantidade + " quantidade(s)");
             }
         }
 
         if (!encontrouMoedaValida)
         {
             Console.WriteLine(valorDaOpcao + " Nao e uma moeda valida");
-            return false;
-        }
-        else
-        {
-            return false;
         }
     }
     catch (Exception)
     {
-        return false;
+        //
     }
 }
 
-bool VerificarDisponibilidadeProduto(string opcao)
+void VerificarDisponibilidadeProduto(string opcao)
 {
     foreach (Produto produto in produtos)
     {
@@ -151,18 +147,15 @@ bool VerificarDisponibilidadeProduto(string opcao)
         {
             if (produto.Quantidade > 0)
             {
-                Console.WriteLine("Produto disponivel");
+                // Console.WriteLine("Produto disponivel");
                 listaDeCompras.Add(produto);
-                return true;
             }
             else
             {
-                Console.WriteLine("Produto em falta");
-                return false;
+                Console.WriteLine("Produto " + produto.Nome + " em falta");
             }
         }
     }
-    return false;
 }
 
 void RealizarCompra()
@@ -228,8 +221,6 @@ void CalcularTroco()
         {
             Console.WriteLine("NO_COINS");
         }
-        // Verificar se ha a possibilidade de troco com as moedas atuais
-        // Criar lista com moedas de troco
     }
     else
     {
@@ -241,27 +232,4 @@ void CalcularTroco()
 void organizarMoedas()
 {
     moedas.Sort((x, y) => y.Valor.CompareTo(x.Valor));
-    foreach (Moeda moeda in moedas)
-    {
-        Console.WriteLine("Valor Moeda: " + moeda.Valor);
-    }
 }
-
-// Processo de compra
-// INPUT: Moedas -> Produto -> Troco (opicional)
-// - Verificar moedas
-//      * Contabilizar moedas no sistema
-//      * Somar ao saldo total do usuario
-// - Verificar qual produto (se for digitado)
-//      * Verificar se ha quantidade suficiente no sistema
-//      * Adicionar ao preco total
-// - Compra:
-//      * Se houver quantidade do produto, continuar processo
-//      * Remover uma quantidade do produto do estoque
-//      * Remover preco do saldo atual
-// - Troco:
-//      * Se houver valor maior que 0, realizar troco
-//      * Comecar pelas moedas de valores maiores e ir diminuindo ate o valor chegar em 0
-//          * Se houver quantidade maior que 0, remover quantidade e adicionar a lista de troco
-//          * Retornar lista de moedas
-//      * Caso nao for possivel chegar a 0, aparecer erro NO_COINS
