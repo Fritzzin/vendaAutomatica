@@ -24,7 +24,10 @@ namespace VendaAutomatica.src
 
         public void RemoverMoeda()
         {
-            Quantidade--;
+            if (Quantidade > 0)
+            {
+                Quantidade--;
+            }
         }
     }
 }

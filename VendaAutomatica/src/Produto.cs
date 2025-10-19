@@ -18,7 +18,10 @@ namespace VendaAutomatica.src
 
         public void RemoverProduto()
         {
-            Quantidade--;
+            if (Quantidade > 0)
+            {
+                Quantidade--;
+            }
         }
     }
 }
