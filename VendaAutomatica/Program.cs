@@ -1,4 +1,4 @@
-﻿using venda_automatica.src;
+﻿using VendaAutomatica.src;
 
 Console.WriteLine("Bem Vindo!");
 Console.WriteLine("----------");

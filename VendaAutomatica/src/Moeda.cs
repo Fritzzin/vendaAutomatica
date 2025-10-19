@@ -1,4 +1,4 @@
-namespace venda_automatica.src
+namespace VendaAutomatica.src
 {
     public class Moeda(string nome, decimal preco, int quantidade)
     {
