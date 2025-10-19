@@ -262,7 +262,7 @@ public class Maquina
         else
         {
             // Console.WriteLine("Nao ha troco a ser entregue");
-            Console.Write("NO_CHANGE");
+            Console.WriteLine("NO_CHANGE");
         }
     }
 
