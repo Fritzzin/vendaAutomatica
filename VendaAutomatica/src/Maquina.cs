@@ -1,6 +1,6 @@
 namespace VendaAutomatica.src;
 
-class Maquina
+public class Maquina
 {
     int quantidadeProdutosInicial = 10;
     int quantidadeMoedasInicial = 10;
@@ -40,7 +40,7 @@ class Maquina
         Apresentacao();
         while (inputUsuario != "q")
         {
-            VerificarSaldo();
+            VerificarSaldo(saldo);
             if (VerificaInputUsuario())
             {
                 RealizarLogica();
@@ -80,15 +80,17 @@ class Maquina
         }
     }
 
-    void VerificarSaldo()
+    public bool VerificarSaldo(decimal saldo)
     {
         if (saldo > 0m)
         {
             Console.Write("Insira moedas e escolha um produto (Saldo Atual: R$" + saldo + "): ");
+            return true;
         }
         else
         {
             Console.Write("Insira moedas e escolha um produto: ");
+            return false;
         }
     }
 
@@ -124,7 +126,7 @@ class Maquina
         Console.WriteLine("\n");
     }
 
-    void VerificarMoeda(string opcao)
+    public bool VerificarMoeda(string opcao)
     {
         bool encontrouMoedaValida = false;
         decimal valorDaOpcao = 0m;
@@ -148,6 +150,7 @@ class Maquina
                     encontrouMoedaValida = true;
                     moeda.InserirMoeda();
                     saldo += valorDaOpcao;
+                    return true;
                     // Console.WriteLine(moeda.Nome + ": " + moeda.Quantidade + " quantidade(s)");
                 }
             }
@@ -155,15 +158,18 @@ class Maquina
             if (!encontrouMoedaValida)
             {
                 Console.WriteLine(valorDaOpcao + " Nao e uma moeda valida");
+                return false;
             }
         }
         catch (Exception)
         {
+            return false;
             //
         }
+        return false;
     }
 
-    void VerificarDisponibilidadeProduto(string opcao)
+    public bool VerificarDisponibilidadeProduto(string opcao)
     {
         foreach (Produto produto in produtos)
         {
@@ -173,14 +179,17 @@ class Maquina
                 {
                     // Console.WriteLine("Produto disponivel");
                     listaDeCompras.Add(produto);
+                    return true;
                 }
                 else
                 {
                     Console.Write("NO_PRODUCT");
+                    return false;
                     // Console.WriteLine("Produto " + produto.Nome + " em falta");
                 }
             }
         }
+        return false;
     }
 
     void RealizarCompra()
@@ -242,6 +251,7 @@ class Maquina
                 {
                     Console.Write(" " + moeda.Nome);
                 }
+                Console.Write("\n");
                 saldo = 0m;
             }
             else
@@ -256,7 +266,7 @@ class Maquina
         }
     }
 
-    static void OrganizarMoedas(List<Moeda> moedas)
+    public static void OrganizarMoedas(List<Moeda> moedas)
     {
         moedas.Sort((x, y) => y.Valor.CompareTo(x.Valor));
     }
