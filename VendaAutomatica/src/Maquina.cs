@@ -9,7 +9,7 @@ public class Maquina
     List<Moeda> moedas;
 
     string? inputUsuario = "";
-    decimal saldo = 0m;
+    decimal saldoNaMaquina = 0m;
 
     List<Produto> listaDeCompras = [];
     List<Moeda> moedasParaTroco = [];
@@ -32,15 +32,15 @@ public class Maquina
             new("0.50", 0.50m, quantidadeMoedasInicial),
             new("1.00", 1.0m, quantidadeMoedasInicial),
         ];
+        OrganizarMoedas(moedas);
     }
 
     public void IniciarSistema()
     {
-        OrganizarMoedas(moedas);
         Apresentacao();
         while (inputUsuario != "q")
         {
-            VerificarSaldo(saldo);
+            VerificarSaldo(saldoNaMaquina);
             if (VerificaInputUsuario())
             {
                 RealizarLogica();
@@ -76,8 +76,10 @@ public class Maquina
         // se usuario requisitou troco, realizar o calculo de troco
         if (precisaTroco)
         {
-            CalcularTroco();
+            Console.Write(" " + CalcularTroco(saldoNaMaquina));
         }
+
+        Console.Write("\n");
     }
 
     public bool VerificarSaldo(decimal saldo)
@@ -149,9 +151,8 @@ public class Maquina
                 {
                     encontrouMoedaValida = true;
                     moeda.InserirMoeda();
-                    saldo += valorDaOpcao;
+                    saldoNaMaquina += valorDaOpcao;
                     return true;
-                    // Console.WriteLine(moeda.Nome + ": " + moeda.Quantidade + " quantidade(s)");
                 }
             }
 
@@ -164,7 +165,6 @@ public class Maquina
         catch (Exception)
         {
             return false;
-            //
         }
         return false;
     }
@@ -177,7 +177,6 @@ public class Maquina
             {
                 if (produto.Quantidade > 0)
                 {
-                    // Console.WriteLine("Produto disponivel");
                     listaDeCompras.Add(produto);
                     return true;
                 }
@@ -185,7 +184,6 @@ public class Maquina
                 {
                     Console.Write("NO_PRODUCT");
                     return false;
-                    // Console.WriteLine("Produto " + produto.Nome + " em falta");
                 }
             }
         }
@@ -196,32 +194,38 @@ public class Maquina
     {
         foreach (Produto produto in listaDeCompras)
         {
-            if (produto.Quantidade > 0)
-            {
-                if (saldo >= produto.Preco)
-                {
-                    produto.RemoverProduto();
-                    saldo -= produto.Preco;
-                    Console.Write(produto.Nome + "=" + saldo + " ");
-                }
-                else
-                {
-                    Console.WriteLine("Nao ha saldo suficiente para o produto");
-                }
-            }
+            ComprarProduto(produto, saldoNaMaquina);
         }
         listaDeCompras = [];
     }
 
-    void CalcularTroco()
+    public bool ComprarProduto(Produto produto, decimal saldo)
+    {
+        if (produto.Quantidade > 0)
+        {
+            if (saldo >= produto.Preco)
+            {
+                produto.RemoverProduto();
+                saldoNaMaquina -= produto.Preco;
+                Console.Write(produto.Nome + "=" + saldoNaMaquina + " ");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Nao ha saldo suficiente para o produto");
+                return false;
+            }
+        }
+        return false;
+    }
+
+    public string CalcularTroco(decimal saldo)
     {
         decimal troco = 0m;
         moedasParaTroco = [];
 
         if (saldo > 0m)
         {
-            // Console.WriteLine("CALCULANDO TROCO...");
-            // Console.WriteLine("TROCO: " + saldo);
             foreach (Moeda moeda in moedas)
             {
                 if (saldo - troco == 0)
@@ -245,24 +249,25 @@ public class Maquina
 
             if (troco == saldo)
             {
-                // Console.WriteLine("Moedas para troco: ");
-                Console.Write("|");
+                string trocoEmString = "";
+
                 foreach (Moeda moeda in moedasParaTroco)
                 {
-                    Console.Write(" " + moeda.Nome);
+                    trocoEmString += " " + moeda.Nome;
                 }
-                Console.Write("\n");
-                saldo = 0m;
+
+                saldoNaMaquina = 0m;
+
+                return trocoEmString;
             }
             else
             {
-                Console.WriteLine("NO_COINS");
+                return "NO_COINS";
             }
         }
         else
         {
-            // Console.WriteLine("Nao ha troco a ser entregue");
-            Console.WriteLine("NO_CHANGE");
+            return "NO_CHANGE";
         }
     }
 

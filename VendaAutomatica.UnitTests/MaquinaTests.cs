@@ -67,4 +67,58 @@ public class MaquinaTests
         Maquina maquina = new();
         Assert.False(maquina.VerificarSaldo(0m));
     }
+
+    [Fact]
+    public void CalcularTroco_PossuiSaldo_RetornarListaTroco()
+    {
+        Maquina maquina = new();
+        decimal saldo = 0.67m;
+        string troco = maquina.CalcularTroco(saldo);
+        Assert.Equal(" 0.50 0.10 0.05 0.01 0.01", troco);
+    }
+
+    [Fact]
+    public void CalcularTroco_NaoHaSaldo_RetornarNO_CHANGE()
+    {
+        Maquina maquina = new();
+        decimal saldo = 0.0m;
+        string troco = maquina.CalcularTroco(saldo);
+        Assert.Equal("NO_CHANGE", troco);
+    }
+
+    [Fact]
+    public void CalcularTroco_NaoHaTroco_RetornarNO_COINS()
+    {
+        Maquina maquina = new();
+        decimal saldo = 60.0m;
+        string troco = maquina.CalcularTroco(saldo);
+        Assert.Equal("NO_COINS", troco);
+    }
+
+    [Fact]
+    public void ComprarProduto_HaProdutoESaldo_RetornarTrue()
+    {
+        Maquina maquina = new();
+        Produto produto = new("coca-cola", 1.5m, 10);
+        decimal saldo = 1.5m;
+        Assert.True(maquina.ComprarProduto(produto, saldo));
+    }
+
+    [Fact]
+    public void ComprarProduto_HaProdutoESaldoInsuficiente_RetornarFalse()
+    {
+        Maquina maquina = new();
+        Produto produto = new("coca-cola", 1.5m, 10);
+        decimal saldo = 1.4m;
+        Assert.False(maquina.ComprarProduto(produto, saldo));
+    }
+
+    [Fact]
+    public void ComprarProduto_SemProdutoComSaldo_RetornarFalse()
+    {
+        Maquina maquina = new();
+        Produto produto = new("coca-cola", 1.5m, 0);
+        decimal saldo = 1.5m;
+        Assert.False(maquina.ComprarProduto(produto, saldo));
+    }
 }
