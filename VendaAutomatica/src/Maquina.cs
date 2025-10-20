@@ -8,7 +8,7 @@ public class Maquina
     List<Produto> produtos;
     List<Moeda> moedas;
 
-    string? inputUsuario = "";
+    string inputUsuario = "";
     decimal saldoNaMaquina = 0m;
 
     List<Produto> listaDeCompras = [];
@@ -76,7 +76,7 @@ public class Maquina
         // se usuario requisitou troco, realizar o calculo de troco
         if (precisaTroco)
         {
-            Console.Write(" " + CalcularTroco(saldoNaMaquina));
+            Console.Write(CalcularTroco(saldoNaMaquina));
         }
 
         Console.Write("\n");
@@ -109,7 +109,6 @@ public class Maquina
 
     void Apresentacao()
     {
-        Console.WriteLine("\n\n\n\n");
         Console.WriteLine("Bem Vindo!");
         Console.WriteLine("----------");
         Console.WriteLine("Produtos Disponiveis:");
