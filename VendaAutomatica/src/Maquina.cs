@@ -2,13 +2,13 @@ namespace VendaAutomatica.src;
 
 public class Maquina
 {
-    int quantidadeProdutosInicial = 10;
-    int quantidadeMoedasInicial = 10;
+    readonly int quantidadeProdutosInicial = 10;
+    readonly int quantidadeMoedasInicial = 10;
 
-    List<Produto> produtos;
-    List<Moeda> moedas;
+    readonly List<Produto> produtos;
+    readonly List<Moeda> moedas;
 
-    string inputUsuario = "";
+    string? inputUsuario = "";
     decimal saldoNaMaquina = 0m;
 
     List<Produto> listaDeCompras = [];
@@ -51,32 +51,43 @@ public class Maquina
     void RealizarLogica()
     {
         bool precisaTroco = false;
-        string[] opcoesDoUsuario = inputUsuario.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-        foreach (string opcao in opcoesDoUsuario)
+        if (inputUsuario != null)
         {
-            // se a opcao se referir a uma moeda, adicionara ao saldo total
-            VerificarMoeda(opcao);
+            string[] opcoesDoUsuario = inputUsuario.Split(
+                " ",
+                StringSplitOptions.RemoveEmptyEntries
+            );
 
-            // se for um produto, adicionara a lista de compras
-            VerificarDisponibilidadeProduto(opcao);
-
-            // se a opcao for "CHANGE", entregara troco no final
-            if (opcao.Equals("CHANGE", StringComparison.CurrentCultureIgnoreCase))
+            foreach (string opcao in opcoesDoUsuario)
             {
-                precisaTroco = true;
+                // se a opcao se referir a uma moeda, adicionara ao saldo total
+                VerificarMoeda(opcao);
+
+                // se for um produto, adicionara a lista de compras
+                VerificarDisponibilidadeProduto(opcao);
+
+                // se a opcao for "CHANGE", entregara troco no final
+                if (opcao.Equals("CHANGE", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    precisaTroco = true;
+                }
+            }
+
+            // Se houver algo na lista de compras, realizar as compras
+            if (listaDeCompras.Count > 0)
+            {
+                RealizarCompra();
+            }
+
+            // se usuario requisitou troco, realizar o calculo de troco
+            if (precisaTroco)
+            {
+                Console.Write(CalcularTroco(saldoNaMaquina));
             }
         }
-
-        // Se houver algo na lista de compras, realizar as compras
-        if (listaDeCompras.Count > 0)
+        else
         {
-            RealizarCompra();
-        }
-
-        // se usuario requisitou troco, realizar o calculo de troco
-        if (precisaTroco)
-        {
-            Console.Write(CalcularTroco(saldoNaMaquina));
+            Console.Write("Opção não válida");
         }
 
         Console.Write("\n");
